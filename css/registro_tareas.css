@@ -1,0 +1,206 @@
+/* Estilos generales */
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(to bottom, #4a90e2, #f78fb3);
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid #ffffff;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 20px;
+}
+
+.navbar-icon {
+    font-size: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.navbar-icon:hover {
+    transform: scale(1.1);
+}
+
+.menu-container {
+    display: flex;
+    align-items: center;
+}
+
+.tareas-text {
+    font-size: 24px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ffffff;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: #4a90e2;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+    color: #f78fb3;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilos para el menú desplegable */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: transparent;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: white; /* Íconos y texto en blanco */
+    font-size: 18px;
+    background-color: transparent; /* Fondo transparente */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border: 2px solid #fff; /* Contorno blanco */
+}
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content a i {
+    margin-right: 10px; /* Espacio entre el icono y el texto */
+}
+
+/* Efecto hover en el menú */
+.dropdown-content a:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo suave al pasar el cursor */
+    color: #f78fb3; /* Color rosa al pasar el cursor */
+}
+
+/* Mostrar el menú cuando se pasa el cursor */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Formulario de Registro de Tarea */
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 50px;
+    text-align: center;
+}
+
+h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+button {
+    background-color: #4a90e2;
+    color: #ffffff;
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #3589cc;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .navbar-icon {
+        font-size: 25px;
+    }
+
+    .form-container {
+        width: 90%;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}
