@@ -1,3 +1,31 @@
+<?php
+session_start();
+
+if (isset($_POST['aceptar'])) {  
+
+require 'config.php';
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $query=$cnnPDO->prepare('SELECT * from usuarios WHERE username=:username and password=:password');
+
+    $query->bindParam(':username',$username);
+    $query->bindParam(':password',$password);
+
+    $query->execute();
+
+    $count=$query->rowCount();
+    $campo = $query->fetch();
+
+    if ($count) {
+       $_SESSION['username'] = $username;
+       $_SESSION['password'] = $password;
+       header("Location:index.php");
+    }
+    }
+ob_end_flush();
+  #termina el codigo de ingresar contraseña
+  ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -23,7 +51,7 @@
                 <label for="password">Contraseña</label>
                 <input type="password" id="password" name="password" placeholder="Introduce tu contraseña" required>
             </div>
-            <button type="submit" class="btn-submit">Iniciar Sesión</button>
+            <button type="submit" class="btn-submit" name="aceptar" id="aceptar">Iniciar Sesión</button>
         </form>
     </div>
 </body>
