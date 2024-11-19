@@ -1,4 +1,72 @@
 <?php
+// Conexión a la base de datos
+require 'config.php';
+
+// Función para agregar una nueva tarea
+function agregarTarea($nombre, $descripcion, $fecha_vencimiento) {
+    global $cnnPDO;
+    $query = $cnnPDO->prepare('INSERT INTO tareas (nombre, descripcion, fecha_vencimiento) VALUES (:nombre, :descripcion, :fecha_vencimiento)');
+    $query->bindParam(':nombre', $nombre);
+    $query->bindParam(':descripcion', $descripcion);
+    $query->bindParam(':fecha_vencimiento', $fecha_vencimiento);
+    $query->execute();
+}
+
+// Función para eliminar una tarea
+function eliminarTarea($id) {
+    global $cnnPDO;
+    $query = $cnnPDO->prepare('DELETE FROM tareas WHERE id = :id');
+    $query->bindParam(':id', $id);
+    $query->execute();
+}
+
+// Función para actualizar una tarea
+function actualizarTarea($id, $nombre, $descripcion, $fecha_vencimiento) {
+    global $cnnPDO;
+    $query = $cnnPDO->prepare('UPDATE tareas SET nombre = :nombre, descripcion = :descripcion, fecha_vencimiento = :fecha_vencimiento WHERE id = :id');
+    $query->bindParam(':id', $id);
+    $query->bindParam(':nombre', $nombre);
+    $query->bindParam(':descripcion', $descripcion);
+    $query->bindParam(':fecha_vencimiento', $fecha_vencimiento);
+    $query->execute();
+}
+
+// Agregar tarea si se envió el formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task-name'])) {
+    $nombre = $_POST['task-name'];
+    $descripcion = $_POST['task-desc'];
+    $fecha_vencimiento = $_POST['task-due'];
+    agregarTarea($nombre, $descripcion, $fecha_vencimiento);
+}
+
+// Eliminar tarea si se pasa un ID en el parámetro de URL
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    eliminarTarea($id);
+}
+
+// Actualizar tarea si se pasa el formulario con ID
+if (isset($_POST['update-id'])) {
+    $id = $_POST['update-id'];
+    $nombre = $_POST['update-name'];
+    $descripcion = $_POST['update-desc'];
+    $fecha_vencimiento = $_POST['update-due'];
+    actualizarTarea($id, $nombre, $descripcion, $fecha_vencimiento);
+}
+
+// Obtener las tareas desde la base de datos
+function obtenerTareas() {
+    global $cnnPDO;
+    $query = $cnnPDO->prepare('SELECT * FROM tareas');
+    $query->execute();
+    return $query->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Llamada para obtener todas las tareas
+$tareas = obtenerTareas();
+?>
+
+<?php
 function obtenerClima($ciudad) {
     $apiKey = 'TU_API_KEY'; // Reemplaza con tu clave API
     $url = "http://api.openweathermap.org/data/2.5/weather?q={$ciudad}&appid={$apiKey}&units=metric&lang=es";
@@ -166,42 +234,72 @@ $clima = obtenerClima($ciudad);
 
     <!-- Contenido principal -->
     <div class="content">
-        <!-- Lista de Tareas -->
-        <div class="task-list-container">
-            <h2>Lista de Tareas</h2>
-            <ul class="task-list">
-                <li class="task-item">
-                    <span>Estudiar JavaScript</span>
-                    <button class="btn-update"><i class="fas fa-edit"></i> Actualizar</button>
-                    <button class="btn-delete"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                </li>
-                <li class="task-item">
-                    <span>Hacer ejercicio</span>
-                    <button class="btn-update"><i class="fas fa-edit"></i> Actualizar</button>
-                    <button class="btn-delete"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                </li>
-            </ul>
-        </div>
+       <!-- Lista de Tareas -->
+<div class="task-list-container">
+    <h2>Lista de Tareas</h2>
+    <ul class="task-list">
+        <?php foreach ($tareas as $tarea): ?>
+            <li class="task-item">
+                <span><?php echo $tarea['nombre']; ?></span>
+                <a href="?delete=<?php echo $tarea['id']; ?>" class="btn-delete"><i class="fas fa-trash-alt"></i> Eliminar</a>
+                <button class="btn-update" onclick="mostrarFormularioActualizar(<?php echo $tarea['id']; ?>, '<?php echo $tarea['nombre']; ?>', '<?php echo $tarea['descripcion']; ?>', '<?php echo $tarea['fecha_vencimiento']; ?>')"><i class="fas fa-edit"></i> Actualizar</button>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
 
-        <!-- Formulario para agregar tareas -->
-        <div class="form-container">
-            <h2>Agregar Nueva Tarea</h2>
-            <form action="#" method="POST">
-                <div class="form-group">
-                    <label for="task-name">Nombre de la Tarea</label>
-                    <input type="text" id="task-name" name="task-name" placeholder="Escribe el nombre de la tarea" required>
-                </div>
-                <div class="form-group">
-                    <label for="task-desc">Descripción</label>
-                    <textarea id="task-desc" name="task-desc" placeholder="Escribe una breve descripción de la tarea" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="task-due">Fecha de Vencimiento</label>
-                    <input type="date" id="task-due" name="task-due" required>
-                </div>
-                <button type="submit" class="btn-submit">Registrar Tarea</button>
-            </form>
+<!-- Formulario para actualizar tarea (se muestra al hacer clic en "Actualizar") -->
+<div id="formulario-actualizar" style="display:none;">
+    <h2>Actualizar Tarea</h2>
+    <form action="#" method="POST">
+        <input type="hidden" name="update-id" id="update-id">
+        <div class="form-group">
+            <label for="update-name">Nombre de la Tarea</label>
+            <input type="text" id="update-name" name="update-name" required>
         </div>
+        <div class="form-group">
+            <label for="update-desc">Descripción</label>
+            <textarea id="update-desc" name="update-desc" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="update-due">Fecha de Vencimiento</label>
+            <input type="date" id="update-due" name="update-due" required>
+        </div>
+        <button type="submit" class="btn-submit">Actualizar Tarea</button>
+    </form>
+</div>
+
+<script>
+    function mostrarFormularioActualizar(id, nombre, descripcion, fecha) {
+        document.getElementById('update-id').value = id;
+        document.getElementById('update-name').value = nombre;
+        document.getElementById('update-desc').value = descripcion;
+        document.getElementById('update-due').value = fecha;
+        document.getElementById('formulario-actualizar').style.display = 'block';
+    }
+</script>
+
+
+<!-- Formulario para agregar tareas -->
+<div class="form-container">
+    <h2>Agregar Nueva Tarea</h2>
+    <form action="#" method="POST">
+        <div class="form-group">
+            <label for="task-name">Nombre de la Tarea</label>
+            <input type="text" id="task-name" name="task-name" placeholder="Escribe el nombre de la tarea" required>
+        </div>
+        <div class="form-group">
+            <label for="task-desc">Descripción</label>
+            <textarea id="task-desc" name="task-desc" placeholder="Escribe una breve descripción de la tarea" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="task-due">Fecha de Vencimiento</label>
+            <input type="date" id="task-due" name="task-due" required>
+        </div>
+        <button type="submit" class="btn-submit">Registrar Tarea</button>
+    </form>
+</div>
+
     </div>
 </body>
 </html>
